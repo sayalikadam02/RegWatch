@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReguScan Live | Global Regulatory Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text: #1e293b;
+      --muted: #64748b;
+      --accent: #2563eb;
+      --accent-light: #dbeafe;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── NAV ── */
+    .rs-nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .rs-logo {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .rs-logo-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+    .rs-nav-pill {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--muted);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    /* ── HERO ── */
+    .rs-hero {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 28px 32px 0;
+    }
+    .rs-hero h1 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    .rs-hero p {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* ── AGENCY TABS ── */
+    .rs-agency-tabs {
+      display: flex;
+      gap: 0;
+      margin-top: 20px;
+      overflow-x: auto;
+    }
+    .rs-agency-tab {
+      padding: 10px 22px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .rs-agency-tab:hover { color: var(--text); background: var(--bg); }
+    .rs-agency-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .rs-agency-tab .sub { opacity: 0.5; font-weight: 400; }
+
+    /* ── VIEW BAR ── */
+    .rs-view-bar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 32px;
+      display: flex;
+      gap: 6px;
+    }
+    .rs-view-btn {
+      font-size: 12px;
+      font-weight: 500;
+      padding: 6px 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .rs-view-btn:hover { background: var(--bg); color: var(--text); }
+    .rs-view-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+    /* ── BODY ── */
+    .rs-body {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 28px 24px;
+    }
+
+    /* ── NEWS CARD ── */
+    .rs-news-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 28px;
+      overflow: hidden;
+    }
+    .rs-news-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .rs-live-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #dc2626;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .rs-live-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #dc2626;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
+    .rs-news-card-title { font-size: 13px; font-weight: 600; color: var(--text); }
+    .rs-newsroom-link {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .rs-newsroom-link:hover { text-decoration: underline; }
+
+    .rs-news-list { padding: 0 20px; }
+    .rs-news-item {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      align-items: start;
+    }
+    .rs-news-item:last-child { border-bottom: none; }
+
+    .rs-date-block { text-align: center; }
+    .rs-date-day { font-size: 20px; font-weight: 600; line-height: 1; }
+    .rs-date-mon {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 2px;
+    }
+
+    .rs-news-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      text-decoration: none;
+      display: block;
+      margin-bottom: 4px;
+      line-height: 1.45;
+    }
+    .rs-news-title:hover { color: var(--accent); }
+    .rs-news-desc { font-size: 12px; color: var(--muted); line-height: 1.55; }
+
+    .rs-loader {
+      padding: 32px 20px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .rs-loader a { color: var(--accent); }
+
+    /* ── GRID ── */
+    .rs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .rs-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: border-color 0.15s;
+    }
+    .rs-card:hover { border-color: #94a3b8; }
+    .rs-card-meta { display: flex; align-items: center; gap: 6px; }
+    .rs-badge {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 9px;
+      border-radius: 20px;
+      letter-spacing: 0.02em;
+    }
+    .rs-badge-fda  { background: #dbeafe; color: #1e40af; }
+    .rs-badge-tga  { background: #d1fae5; color: #065f46; }
+    .rs-badge-mhra { background: #ede9fe; color: #4c1d95; }
+    .rs-badge-ema  { background: #fef3c7; color: #92400e; }
+    .rs-card-cat {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .rs-card h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.35;
+    }
+    .rs-card p {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.55;
+      flex: 1;
+    }
+    .rs-card-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent);
+      text-decoration: none;
+      margin-top: 4px;
+    }
+    .rs-card-link:hover { text-decoration: underline; }
+    .rs-card-link svg { width: 11px; height: 11px; }
+
+    #rs-section-news { display: none; }
+    #rs-section-grid { display: none; }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="rs-nav">
+    <div class="rs-logo">
+      <div class="rs-logo-dot"></div>
+      RegWatch
+    </div>
+    <span class="rs-nav-pill">Multi-Agency Portal</span>
+  </nav>
+
+  <!-- HERO + AGENCY TABS -->
+  <div class="rs-hero">
+    <h1>Global Regulatory Portal</h1>
+    <p>Live intelligence and databases from FDA, TGA, MHRA, and EMA — all in one place.</p>
+    <div class="rs-agency-tabs" id="agencyTabs">
+      <button class="rs-agency-tab active" onclick="setAgency('fda', this)">FDA <span class="sub">USA</span></button>
+      <button class="rs-agency-tab" onclick="setAgency('tga', this)">TGA <span class="sub">Australia</span></button>
+      <button class="rs-agency-tab" onclick="setAgency('mhra', this)">MHRA <span class="sub">UK</span></button>
+      <button class="rs-agency-tab" onclick="setAgency('ema', this)">EMA <span class="sub">Europe</span></button>
+    </div>
+  </div>
+
+  <!-- VIEW BAR -->
+  <div class="rs-view-bar">
+    <button class="rs-view-btn active" id="vbtn-all"   onclick="showSection('all',   this)">All resources</button>
+    <button class="rs-view-btn"        id="vbtn-news"  onclick="showSection('news',  this)">Live newsroom</button>
+    <button class="rs-view-btn"        id="vbtn-drugs" onclick="showSection('drugs', this)">Databases &amp; guidance</button>
+  </div>
+
+  <!-- MAIN -->
+  <main class="rs-body">
+
+    <!-- NEWS -->
+    <div id="rs-section-news">
+      <div class="rs-news-card">
+        <div class="rs-news-card-header">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div class="rs-live-badge"><span class="rs-live-dot"></span>Live</div>
+            <span class="rs-news-card-title" id="newsLabel">FDA Updates</span>
+          </div>
+          <a href="#" id="newsroomLink" target="_blank" class="rs-newsroom-link">Official newsroom →</a>
+        </div>
+        <div class="rs-news-list" id="newsList">
+          <div class="rs-loader">Fetching latest updates…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GRID -->
+    <div id="rs-section-grid" class="rs-grid"></div>
+
+  </main>
+
+  <script>
+    let currentAgency = 'fda';
+    let currentView   = 'all';
+
+    const agencyConfig = {
+      fda:  { name: 'FDA',  rss: 'https://www.fda.gov/about-fda/contact-fda/stay-informed/rss-feeds/press-releases/rss.xml', archive: 'https://www.fda.gov/news-events/fda-newsroom' },
+      tga:  { name: 'TGA',  rss: 'https://www.tga.gov.au/news/articles/rss.xml',                                             archive: 'https://www.tga.gov.au/news/articles' },
+      mhra: { name: 'MHRA', rss: 'https://www.gov.uk/search/news-and-communications.atom',                                   archive: 'https://www.gov.uk/search/news-and-communications' },
+      ema:  { name: 'EMA',  rss: 'https://www.ema.europa.eu/en/news.xml',                                                    archive: 'https://www.ema.europa.eu/en/news' }
+    };
+
+    const staticData = [
+      { agency:'fda',  category:'drugs', title:'Drug approvals database',  description:'Search the database of all FDA approved drugs.',                               url:'https://www.fda.gov/drugs/development-approval-process-drugs/drug-approvals-and-databases' },
+      { agency:'fda',  category:'drugs', title:'Drug guidance docs',        description:'Searchable database for official drug guidances.',                             url:'https://www.fda.gov/drugs/guidance-compliance-regulatory-information' },
+      { agency:'fda',  category:'drugs', title:'Guidance documents',        description:'Search FDA guidance documents from every center and topic.',                   url:'https://www.fda.gov/regulatory-information/search-fda-guidance-documents' },
+      { agency:'tga',  category:'drugs', title:'TGA guidance',              description:'Official TGA resources and guidance documents.',                               url:'https://www.tga.gov.au/resources/guidance' },
+      { agency:'tga',  category:'drugs', title:'Regulation essentials',     description:'Foundational regulation information for all products.',                        url:'https://www.tga.gov.au/products/regulations-all-products/regulation-essentials' },
+      { agency:'tga',  category:'drugs', title:'Medical devices regs',      description:'Specific regulations for medical devices in Australia.',                       url:'https://www.tga.gov.au/products/medical-devices#regulation-of-medical-devices' },
+      { agency:'tga',  category:'drugs', title:'Biologicals regulations',   description:'Regulatory framework for biological products.',                                url:'https://www.tga.gov.au/products/biologicals#regulation-of-biologicals' },
+      { agency:'tga',  category:'drugs', title:'Medicines regulations',     description:'Search specific regulations for medicines.',                                   url:'https://www.tga.gov.au/products/medicines#regulation-of-medicines' },
+      { agency:'mhra', category:'drugs', title:'Guidance & regulations',    description:'UK government portal for MHRA guidance and regulatory search.',                url:'https://www.gov.uk/search/guidance-and-regulation' },
+      { agency:'ema',  category:'drugs', title:'Medical device regs',       description:'EMA regulatory overview and responsibilities for medical devices.',            url:'https://www.ema.europa.eu/en/human-regulatory-overview/medical-devices#ema-regulatory-responsibilities-83855' }
+    ];
+
+    async function fetchLiveNews() {
+      const cfg = agencyConfig[currentAgency];
+      document.getElementById('newsLabel').textContent = cfg.name + ' Updates';
+      document.getElementById('newsroomLink').href = cfg.archive;
+      const nl = document.getElementById('newsList');
+      nl.innerHTML = '<div class="rs-loader">Fetching updates from ' + cfg.name + '…</div>';
+      const api = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(cfg.rss);
+      try {
+        const r = await fetch(api);
+        const d = await r.json();
+        if (d.status === 'ok' && d.items.length > 0) {
+          nl.innerHTML = '';
+          d.items.slice(0, 10).forEach(item => {
+            const dt  = new Date(item.pubDate);
+            const day = isNaN(dt) ? '—' : dt.getDate();
+            const mon = isNaN(dt) ? '' : dt.toLocaleString('en-US', { month: 'short' });
+            const desc = item.description ? item.description.replace(/<[^>]*>/g, '').substring(0, 130) : '';
+            nl.insertAdjacentHTML('beforeend', `
+              <div class="rs-news-item">
+                <div class="rs-date-block">
+                  <div class="rs-date-day">${day}</div>
+                  <div class="rs-date-mon">${mon}</div>
+                </div>
+                <div>
+                  <a href="${item.link}" target="_blank" class="rs-news-title">${item.title}</a>
+                  <div class="rs-news-desc">${desc}${desc ? '…' : ''}</div>
+                </div>
+              </div>`);
+          });
+        } else { throw 0; }
+      } catch (e) {
+        nl.innerHTML = `<div class="rs-loader">Live feed unavailable. <a href="${cfg.archive}" target="_blank">View on ${cfg.name} website →</a></div>`;
+      }
+    }
+
+    function renderGrid() {
+      const grid = document.getElementById('rs-section-grid');
+      grid.innerHTML = '';
+      staticData.filter(d => d.agency === currentAgency).forEach(item => {
+        grid.insertAdjacentHTML('beforeend', `
+          <div class="rs-card">
+            <div class="rs-card-meta">
+              <span class="rs-badge rs-badge-${item.agency}">${item.agency.toUpperCase()}</span>
+              <span class="rs-card-cat">${item.category}</span>
+            </div>
+            <h3>${item.title}</h3>
+            <p>${item.description}</p>
+            <a href="${item.url}" target="_blank" class="rs-card-link">
+              Visit website
+              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M2 10L10 2M5 2h5v5"/>
+              </svg>
+            </a>
+          </div>`);
+      });
+    }
+
+    function setAgency(agency, el) {
+      currentAgency = agency;
+      document.querySelectorAll('.rs-agency-tab').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      showSection(currentView, null);
+    }
+
+    function showSection(type, el) {
+      currentView = type;
+      document.querySelectorAll('.rs-view-btn').forEach(b => b.classList.remove('active'));
+      if (el) {
+        el.classList.add('active');
+      } else {
+        const t = document.getElementById('vbtn-' + type);
+        if (t) t.classList.add('active');
+      }
+      const ns = document.getElementById('rs-section-news');
+      const gs = document.getElementById('rs-section-grid');
+      if (type === 'news') {
+        ns.style.display = 'block'; gs.style.display = 'none';
+        fetchLiveNews();
+      } else if (type === 'drugs') {
+        ns.style.display = 'none'; gs.style.display = 'grid';
+        renderGrid();
+      } else {
+        ns.style.display = 'block'; gs.style.display = 'grid';
+        fetchLiveNews(); renderGrid();
+      }
+    }
+
+    showSection('all', null);
+  </script>
+</body>
+</html>
