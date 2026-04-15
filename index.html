@@ -276,6 +276,35 @@
 
     #rs-section-news { display: none; }
     #rs-section-grid { display: none; }
+    #rs-section-live-guidance { display: none; }
+
+    .rs-section-block { margin-bottom: 32px; }
+    .rs-section-heading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .rs-section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .rs-section-count {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--accent-light);
+      padding: 1px 8px;
+      border-radius: 20px;
+    }
+    .rs-section-divider {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
   </style>
 </head>
 <body>
@@ -284,7 +313,7 @@
   <nav class="rs-nav">
     <div class="rs-logo">
       <div class="rs-logo-dot"></div>
-      RegWatch
+      ReguScan Intelligence
     </div>
     <span class="rs-nav-pill">Multi-Agency Portal</span>
   </nav>
@@ -303,9 +332,9 @@
 
   <!-- VIEW BAR -->
   <div class="rs-view-bar">
-    <button class="rs-view-btn active" id="vbtn-all"   onclick="showSection('all',   this)">All resources</button>
-    <button class="rs-view-btn"        id="vbtn-news"  onclick="showSection('news',  this)">Live newsroom</button>
-    <button class="rs-view-btn"        id="vbtn-drugs" onclick="showSection('drugs', this)">Databases &amp; guidance</button>
+    <button class="rs-view-btn active" id="vbtn-news"     onclick="showSection('news',     this)">Live newsroom</button>
+    <button class="rs-view-btn"        id="vbtn-database" onclick="showSection('database', this)">Drug database</button>
+    <button class="rs-view-btn"        id="vbtn-guidance" onclick="showSection('guidance', this)">Guidance documents</button>
   </div>
 
   <!-- MAIN -->
@@ -327,52 +356,70 @@
       </div>
     </div>
 
+    <!-- LIVE GUIDANCE (Specific for FDA) -->
+    <div id="rs-section-live-guidance">
+        <div class="rs-news-card">
+          <div class="rs-news-card-header">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div class="rs-live-badge"><span class="rs-live-dot" style="background:#2563eb;"></span>Live</div>
+              <span class="rs-news-card-title" id="guidanceLabel">FDA Guidance Documents</span>
+            </div>
+            <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents" id="guidanceLink" target="_blank" class="rs-newsroom-link">Search Database →</a>
+          </div>
+          <div class="rs-news-list" id="guidanceList">
+            <div class="rs-loader">Fetching latest documents…</div>
+          </div>
+        </div>
+      </div>
+
     <!-- GRID -->
-    <div id="rs-section-grid" class="rs-grid"></div>
+    <div id="rs-section-grid"></div>
 
   </main>
 
   <script>
     let currentAgency = 'fda';
-    let currentView   = 'all';
+    let currentView   = 'news';
 
     const agencyConfig = {
-      fda:  { name: 'FDA',  rss: 'https://www.fda.gov/about-fda/contact-fda/stay-informed/rss-feeds/press-releases/rss.xml', archive: 'https://www.fda.gov/news-events/fda-newsroom' },
+      fda:  { 
+        name: 'FDA',  
+        rss: 'https://www.fda.gov/about-fda/contact-fda/stay-informed/rss-feeds/press-releases/rss.xml', 
+        guidanceRss: 'https://www.fda.gov/about-fda/contact-fda/stay-informed/rss-feeds/guidance-documents/rss.xml',
+        archive: 'https://www.fda.gov/news-events/fda-newsroom' 
+      },
       tga:  { name: 'TGA',  rss: 'https://www.tga.gov.au/news/articles/rss.xml',                                             archive: 'https://www.tga.gov.au/news/articles' },
       mhra: { name: 'MHRA', rss: 'https://www.gov.uk/search/news-and-communications.atom',                                   archive: 'https://www.gov.uk/search/news-and-communications' },
       ema:  { name: 'EMA',  rss: 'https://www.ema.europa.eu/en/news.xml',                                                    archive: 'https://www.ema.europa.eu/en/news' }
     };
 
     const staticData = [
-      { agency:'fda',  category:'drugs', title:'Drug approvals database',  description:'Search the database of all FDA approved drugs.',                               url:'https://www.fda.gov/drugs/development-approval-process-drugs/drug-approvals-and-databases' },
-      { agency:'fda',  category:'drugs', title:'Drug guidance docs',        description:'Searchable database for official drug guidances.',                             url:'https://www.fda.gov/drugs/guidance-compliance-regulatory-information' },
-      { agency:'fda',  category:'drugs', title:'Guidance documents',        description:'Search FDA guidance documents from every center and topic.',                   url:'https://www.fda.gov/regulatory-information/search-fda-guidance-documents' },
-      { agency:'tga',  category:'drugs', title:'TGA guidance',              description:'Official TGA resources and guidance documents.',                               url:'https://www.tga.gov.au/resources/guidance' },
-      { agency:'tga',  category:'drugs', title:'Regulation essentials',     description:'Foundational regulation information for all products.',                        url:'https://www.tga.gov.au/products/regulations-all-products/regulation-essentials' },
-      { agency:'tga',  category:'drugs', title:'Medical devices regs',      description:'Specific regulations for medical devices in Australia.',                       url:'https://www.tga.gov.au/products/medical-devices#regulation-of-medical-devices' },
-      { agency:'tga',  category:'drugs', title:'Biologicals regulations',   description:'Regulatory framework for biological products.',                                url:'https://www.tga.gov.au/products/biologicals#regulation-of-biologicals' },
-      { agency:'tga',  category:'drugs', title:'Medicines regulations',     description:'Search specific regulations for medicines.',                                   url:'https://www.tga.gov.au/products/medicines#regulation-of-medicines' },
-      { agency:'mhra', category:'drugs', title:'Guidance & regulations',    description:'UK government portal for MHRA guidance and regulatory search.',                url:'https://www.gov.uk/search/guidance-and-regulation' },
-      { agency:'ema',  category:'drugs', title:'Medical device regs',       description:'EMA regulatory overview and responsibilities for medical devices.',            url:'https://www.ema.europa.eu/en/human-regulatory-overview/medical-devices#ema-regulatory-responsibilities-83855' }
+      { agency:'fda',  category:'database',  title:'Drug approvals database',  description:'Search the database of all FDA approved drugs.',                               url:'https://www.fda.gov/drugs/development-approval-process-drugs/drug-approvals-and-databases' },
+      { agency:'fda',  category:'database',  title:'Drug guidance docs',        description:'Searchable database for official drug guidances.',                             url:'https://www.fda.gov/drugs/guidance-compliance-regulatory-information' },
+      { agency:'tga',  category:'guidance',  title:'TGA guidance',              description:'Official TGA resources and guidance documents.',                               url:'https://www.tga.gov.au/resources/guidance' },
+      { agency:'tga',  category:'guidance',  title:'Regulation essentials',     description:'Foundational regulation information for all products.',                        url:'https://www.tga.gov.au/products/regulations-all-products/regulation-essentials' },
+      { agency:'tga',  category:'database',  title:'Medical devices regs',      description:'Specific regulations for medical devices in Australia.',                       url:'https://www.tga.gov.au/products/medical-devices#regulation-of-medical-devices' },
+      { agency:'tga',  category:'database',  title:'Biologicals regulations',   description:'Regulatory framework for biological products.',                                url:'https://www.tga.gov.au/products/biologicals#regulation-of-biologicals' },
+      { agency:'tga',  category:'database',  title:'Medicines regulations',     description:'Search specific regulations for medicines.',                                   url:'https://www.tga.gov.au/products/medicines#regulation-of-medicines' },
+      { agency:'mhra', category:'guidance',  title:'Guidance & regulations',    description:'UK government portal for MHRA guidance and regulatory search.',                url:'https://www.gov.uk/search/guidance-and-regulation' },
+      { agency:'ema',  category:'database',  title:'Medical device regs',       description:'EMA regulatory overview and responsibilities for medical devices.',            url:'https://www.ema.europa.eu/en/human-regulatory-overview/medical-devices#ema-regulatory-responsibilities-83855' }
     ];
 
-    async function fetchLiveNews() {
-      const cfg = agencyConfig[currentAgency];
-      document.getElementById('newsLabel').textContent = cfg.name + ' Updates';
-      document.getElementById('newsroomLink').href = cfg.archive;
-      const nl = document.getElementById('newsList');
-      nl.innerHTML = '<div class="rs-loader">Fetching updates from ' + cfg.name + '…</div>';
-      const api = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(cfg.rss);
+    async function fetchRSS(rssUrl, containerId, agencyName) {
+      const nl = document.getElementById(containerId);
+      nl.innerHTML = '<div class="rs-loader">Fetching latest from ' + agencyName + '…</div>';
+      const api = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
+      
       try {
         const r = await fetch(api);
         const d = await r.json();
         if (d.status === 'ok' && d.items.length > 0) {
           nl.innerHTML = '';
-          d.items.slice(0, 10).forEach(item => {
+          d.items.slice(0, 15).forEach(item => {
             const dt  = new Date(item.pubDate);
             const day = isNaN(dt) ? '—' : dt.getDate();
             const mon = isNaN(dt) ? '' : dt.toLocaleString('en-US', { month: 'short' });
-            const desc = item.description ? item.description.replace(/<[^>]*>/g, '').substring(0, 130) : '';
+            const desc = item.description ? item.description.replace(/<[^>]*>/g, '').substring(0, 160) : '';
             nl.insertAdjacentHTML('beforeend', `
               <div class="rs-news-item">
                 <div class="rs-date-block">
@@ -387,30 +434,58 @@
           });
         } else { throw 0; }
       } catch (e) {
-        nl.innerHTML = `<div class="rs-loader">Live feed unavailable. <a href="${cfg.archive}" target="_blank">View on ${cfg.name} website →</a></div>`;
+        if (containerId === 'guidanceList') {
+            nl.innerHTML = `
+              <div class="rs-loader">
+                <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents" 
+                   target="_blank" 
+                   style="color: var(--accent); text-decoration: underline; font-weight: 500;">
+                   Unable to fetch live guidance list. Access FDA Guidance Search directly →
+                </a>
+              </div>`;
+        } else {
+            nl.innerHTML = `<div class="rs-loader">Feed temporarily unavailable. Please use official portal links above.</div>`;
+        }
       }
     }
 
-    function renderGrid() {
-      const grid = document.getElementById('rs-section-grid');
-      grid.innerHTML = '';
-      staticData.filter(d => d.agency === currentAgency).forEach(item => {
-        grid.insertAdjacentHTML('beforeend', `
-          <div class="rs-card">
-            <div class="rs-card-meta">
-              <span class="rs-badge rs-badge-${item.agency}">${item.agency.toUpperCase()}</span>
-              <span class="rs-card-cat">${item.category}</span>
+    function makeCard(item) {
+      return `
+        <div class="rs-card">
+          <div class="rs-card-meta">
+            <span class="rs-badge rs-badge-${item.agency}">${item.agency.toUpperCase()}</span>
+            <span class="rs-card-cat">${item.category}</span>
+          </div>
+          <h3>${item.title}</h3>
+          <p>${item.description}</p>
+          <a href="${item.url}" target="_blank" class="rs-card-link">
+            Visit website
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M2 10L10 2M5 2h5v5"/>
+            </svg>
+          </a>
+        </div>`;
+    }
+
+    function renderGrid(filterCategory) {
+      const wrap = document.getElementById('rs-section-grid');
+      wrap.innerHTML = '';
+      const items = staticData.filter(d => d.agency === currentAgency && d.category === filterCategory);
+      
+      if (items.length > 0) {
+        const label = filterCategory === 'database' ? 'Databases' : 'Guidance Documents';
+        wrap.insertAdjacentHTML('beforeend', `
+          <div class="rs-section-block">
+            <div class="rs-section-heading">
+              <span class="rs-section-title">${label}</span>
+              <span class="rs-section-count">${items.length}</span>
+              <div class="rs-section-divider"></div>
             </div>
-            <h3>${item.title}</h3>
-            <p>${item.description}</p>
-            <a href="${item.url}" target="_blank" class="rs-card-link">
-              Visit website
-              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M2 10L10 2M5 2h5v5"/>
-              </svg>
-            </a>
+            <div class="rs-grid">${items.map(makeCard).join('')}</div>
           </div>`);
-      });
+      } else if (currentAgency !== 'fda' || filterCategory !== 'guidance') {
+          wrap.innerHTML = '<div class="rs-loader">Select a category to view resources.</div>';
+      }
     }
 
     function setAgency(agency, el) {
@@ -423,27 +498,39 @@
     function showSection(type, el) {
       currentView = type;
       document.querySelectorAll('.rs-view-btn').forEach(b => b.classList.remove('active'));
-      if (el) {
-        el.classList.add('active');
-      } else {
+      if (el) el.classList.add('active');
+      else {
         const t = document.getElementById('vbtn-' + type);
         if (t) t.classList.add('active');
       }
+
       const ns = document.getElementById('rs-section-news');
       const gs = document.getElementById('rs-section-grid');
+      const ls = document.getElementById('rs-section-live-guidance');
+
+      // Reset visibility
+      ns.style.display = 'none';
+      gs.style.display = 'none';
+      ls.style.display = 'none';
+
       if (type === 'news') {
-        ns.style.display = 'block'; gs.style.display = 'none';
-        fetchLiveNews();
-      } else if (type === 'drugs') {
-        ns.style.display = 'none'; gs.style.display = 'grid';
-        renderGrid();
-      } else {
-        ns.style.display = 'block'; gs.style.display = 'grid';
-        fetchLiveNews(); renderGrid();
+        ns.style.display = 'block';
+        const cfg = agencyConfig[currentAgency];
+        document.getElementById('newsLabel').textContent = cfg.name + ' Updates';
+        document.getElementById('newsroomLink').href = cfg.archive;
+        fetchRSS(cfg.rss, 'newsList', cfg.name);
+      } 
+      else if (type === 'guidance' && currentAgency === 'fda') {
+        ls.style.display = 'block';
+        fetchRSS(agencyConfig.fda.guidanceRss, 'guidanceList', 'FDA Guidance');
+      }
+      else {
+        gs.style.display = 'block';
+        renderGrid(type);
       }
     }
 
-    showSection('all', null);
+    showSection('news', null);
   </script>
 </body>
 </html>
