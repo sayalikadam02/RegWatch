@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RegWatch | Global Regulatory Portal</title>
+  <title>RegWatch Live | Global Regulatory Portal</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -333,8 +333,9 @@
   <!-- VIEW BAR -->
   <div class="rs-view-bar">
     <button class="rs-view-btn active" id="vbtn-news"     onclick="showSection('news',     this)">Live newsroom</button>
-    <button class="rs-view-btn"        id="vbtn-database" onclick="showSection('database', this)">Drug database</button>
-    <button class="rs-view-btn"        id="vbtn-guidance" onclick="showSection('guidance', this)">Guidance documents</button>
+    <button class="rs-view-btn"        id="vbtn-database" onclick="showSection('database', this)">Drug</button>
+    <button class="rs-view-btn"        id="vbtn-guidance" onclick="showSection('guidance', this)">Medical Devices</button>
+    <button class="rs-view-btn"        id="vbtn-vaccine"  onclick="showSection('vaccine',  this)">Vaccine, Blood & Biologics</button>
   </div>
 
   <!-- MAIN -->
@@ -356,18 +357,18 @@
       </div>
     </div>
 
-    <!-- LIVE GUIDANCE (Specific for FDA) -->
+    <!-- LIVE GUIDANCE (Legacy holder, now used by other agencies if needed) -->
     <div id="rs-section-live-guidance">
         <div class="rs-news-card">
           <div class="rs-news-card-header">
             <div style="display:flex;align-items:center;gap:12px;">
               <div class="rs-live-badge"><span class="rs-live-dot" style="background:#2563eb;"></span>Live</div>
-              <span class="rs-news-card-title" id="guidanceLabel">FDA Guidance Documents</span>
+              <span class="rs-news-card-title" id="guidanceLabel">Regulatory Documents</span>
             </div>
-            <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents" id="guidanceLink" target="_blank" class="rs-newsroom-link">Search Database →</a>
+            <a href="#" id="guidanceLink" target="_blank" class="rs-newsroom-link">Official portal →</a>
           </div>
           <div class="rs-news-list" id="guidanceList">
-            <div class="rs-loader">Fetching latest documents…</div>
+            <div class="rs-loader">Fetching documents…</div>
           </div>
         </div>
       </div>
@@ -388,21 +389,36 @@
         guidanceRss: 'https://www.fda.gov/about-fda/contact-fda/stay-informed/rss-feeds/guidance-documents/rss.xml',
         archive: 'https://www.fda.gov/news-events/fda-newsroom' 
       },
-      tga:  { name: 'TGA',  rss: 'https://www.tga.gov.au/news/articles/rss.xml',                                             archive: 'https://www.tga.gov.au/news/articles' },
-      mhra: { name: 'MHRA', rss: 'https://www.gov.uk/search/news-and-communications.atom',                                   archive: 'https://www.gov.uk/search/news-and-communications' },
-      ema:  { name: 'EMA',  rss: 'https://www.ema.europa.eu/en/news.xml',                                                    archive: 'https://www.ema.europa.eu/en/news' }
+      tga:  { name: 'TGA',  rss: 'https://www.tga.gov.au/news/articles/rss.xml', archive: 'https://www.tga.gov.au/news/articles' },
+      mhra: { name: 'MHRA', rss: 'https://www.gov.uk/search/news-and-communications.atom', archive: 'https://www.gov.uk/search/news-and-communications' },
+      ema:  { name: 'EMA',  rss: 'https://www.ema.europa.eu/en/news.xml', archive: 'https://www.ema.europa.eu/en/news' }
     };
 
     const staticData = [
-      { agency:'fda',  category:'database',  title:'Drug approvals database',  description:'Search the database of all FDA approved drugs.',                               url:'https://www.fda.gov/drugs/development-approval-process-drugs/drug-approvals-and-databases' },
-      { agency:'fda',  category:'database',  title:'Drug guidance docs',        description:'Searchable database for official drug guidances.',                             url:'https://www.fda.gov/drugs/guidance-compliance-regulatory-information' },
-      { agency:'tga',  category:'guidance',  title:'TGA guidance',              description:'Official TGA resources and guidance documents.',                               url:'https://www.tga.gov.au/resources/guidance' },
-      { agency:'tga',  category:'guidance',  title:'Regulation essentials',     description:'Foundational regulation information for all products.',                        url:'https://www.tga.gov.au/products/regulations-all-products/regulation-essentials' },
-      { agency:'tga',  category:'database',  title:'Medical devices regs',      description:'Specific regulations for medical devices in Australia.',                       url:'https://www.tga.gov.au/products/medical-devices#regulation-of-medical-devices' },
-      { agency:'tga',  category:'database',  title:'Biologicals regulations',   description:'Regulatory framework for biological products.',                                url:'https://www.tga.gov.au/products/biologicals#regulation-of-biologicals' },
-      { agency:'tga',  category:'database',  title:'Medicines regulations',     description:'Search specific regulations for medicines.',                                   url:'https://www.tga.gov.au/products/medicines#regulation-of-medicines' },
-      { agency:'mhra', category:'guidance',  title:'Guidance & regulations',    description:'UK government portal for MHRA guidance and regulatory search.',                url:'https://www.gov.uk/search/guidance-and-regulation' },
-      { agency:'ema',  category:'database',  title:'Medical device regs',       description:'EMA regulatory overview and responsibilities for medical devices.',            url:'https://www.ema.europa.eu/en/human-regulatory-overview/medical-devices#ema-regulatory-responsibilities-83855' }
+      // MEDICAL DEVICES TILES (FDA)
+      { agency:'fda', category:'guidance', title:'Cleared 510(k) Submissions (2026)', description:'View Substantially Equivalent 510(k) device information and supporting documents for the year 2026.', url:'https://www.fda.gov/vaccines-blood-biologics/substantially-equivalent-510k-device-information/cleared-510k-submissions-supporting-documents-2026' },
+      { agency:'fda', category:'guidance', title:'Recalls and Early Alerts', description:'Stay informed on the latest medical device recalls and safety alerts to ensure patient protection.', url:'https://www.fda.gov/medical-devices/medical-device-safety/medical-device-recalls-and-early-alerts' },
+      { agency:'fda', category:'guidance', title:'Science and Research', description:'Explore FDA CDRH science and research initiatives for medical device safety and innovation.', url:'https://www.fda.gov/medical-devices/science-and-research-medical-devices' },
+      { agency:'fda', category:'guidance', title:'CDRH New - News and Updates', description:'The latest news, events, and regulatory updates specifically for medical device manufacturers and the public.', url:'https://www.fda.gov/medical-devices/medical-devices-news-and-events/cdrh-new-news-and-updates' },
+      { agency:'fda', category:'guidance', title:'FDA Guidance Documents', description:'Search the complete database for official FDA guidance documents across all centers and topics.', url:'https://www.fda.gov/regulatory-information/search-fda-guidance-documents' },
+
+      // DRUG TILES (FDA)
+      { agency:'fda', category:'database', title:"What's New Related to Drugs", description:"Quick links to the latest on a variety of topics including: drug approvals, safety warnings, drug shortages, etc.", url:'http://www.fda.gov/drugs/news-events-human-drugs/whats-new-related-drugs' },
+      { agency:'fda', category:'database', title:'Drug Alerts and Statements', description:"Updates from CDER on fast-moving issues and work to enhance public health.", url:'http://www.fda.gov/drugs/drug-safety-and-availability/drug-alerts-and-statements' },
+      { agency:'fda', category:'database', title:'Drug Approvals and Database', description:'Downloadable Data Files in ZIP format, Data Definitions, and Entity Relationship Diagrams.', url:'http://www.fda.gov/drugs/drug-approvals-and-databases/drugsfda-data-files' },
+      { agency:'fda', category:'database', title:'Adverse Reporting system', description:'Technical specifications for electronic submission standards (FAERS) for safety surveillance.', url:'http://www.fda.gov/drugs/news-events-human-drugs/electronic-submission-adverse-event-reports-fda-adverse-event-reporting-system-faers-using' },
+
+      // VACCINE, BLOOD & BIOLOGICS ITEMS
+      { agency:'fda', category:'vaccine', title:'Drug Approvals and Database', description:'Downloadable Data File in ZIP format, Data Definitions, and Entity Relationship Diagram (ERD)', url:'http://www.fda.gov/drugs/drug-approvals-and-databases/drugsfda-data-files' },
+      { agency:'fda', category:'vaccine', title:'What’s New for Biologics', description:'Latest news from the Center for Biologics Evaluation and Research', url:'http://www.fda.gov/vaccines-blood-biologics/news-events-biologics/whats-new-biologics' },
+      { agency:'fda', category:'vaccine', title:'Recently Issued Guidance Documents', description:'This page lists Recently Issued CBER and Cross-Center Guidance Documents.', url:'http://www.fda.gov/vaccines-blood-biologics/biologics-guidances/recently-issued-guidance-documents' },
+      { agency:'fda', category:'vaccine', title:'Upcoming Workshops, Meetings, & Conferences', description:'Information on CBER sponsored meetings and workshops about various biologics.', url:'http://www.fda.gov/vaccines-blood-biologics/news-events-biologics/workshops-meetings-conferences-biologics' },
+      { agency:'fda', category:'vaccine', title:'Biologics Procedures (SOPPs)', description:'Standard Operating Procedures and Policies used by staff in FDA\'s CBER.', url:'http://www.fda.gov/vaccines-blood-biologics/guidance-compliance-regulatory-information-biologics/biologics-procedures-sopps' },
+      
+      { agency:'tga',  category:'guidance',  title:'TGA guidance',              description:'Official TGA resources and guidance documents.', url:'https://www.tga.gov.au/resources/guidance' },
+      { agency:'tga',  category:'database',  title:'Medicines regulations',     description:'Search specific regulations for medicines.', url:'https://www.tga.gov.au/products/medicines#regulation-of-medicines' },
+      { agency:'mhra', category:'guidance',  title:'Guidance & regulations',    description:'UK government portal for MHRA guidance and regulatory search.', url:'https://www.gov.uk/search/guidance-and-regulation' },
+      { agency:'ema',  category:'database',  title:'Medical device regs',       description:'EMA regulatory overview and responsibilities for medical devices.', url:'https://www.ema.europa.eu/en/human-regulatory-overview/medical-devices#ema-regulatory-responsibilities-83855' }
     ];
 
     async function fetchRSS(rssUrl, containerId, agencyName) {
@@ -432,20 +448,9 @@
                 </div>
               </div>`);
           });
-        } else { throw 0; }
+        } else throw 0;
       } catch (e) {
-        if (containerId === 'guidanceList') {
-            nl.innerHTML = `
-              <div class="rs-loader">
-                <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents" 
-                   target="_blank" 
-                   style="color: var(--accent); text-decoration: underline; font-weight: 500;">
-                   Unable to fetch live guidance list. Access FDA Guidance Search directly →
-                </a>
-              </div>`;
-        } else {
-            nl.innerHTML = `<div class="rs-loader">Feed temporarily unavailable. Please use official portal links above.</div>`;
-        }
+        nl.innerHTML = `<div class="rs-loader">Feed temporarily unavailable. Please use official portal links.</div>`;
       }
     }
 
@@ -473,7 +478,11 @@
       const items = staticData.filter(d => d.agency === currentAgency && d.category === filterCategory);
       
       if (items.length > 0) {
-        const label = filterCategory === 'database' ? 'Databases' : 'Guidance Documents';
+        let label = 'Resources';
+        if (filterCategory === 'database') label = 'Drug Resources';
+        if (filterCategory === 'guidance') label = 'Medical Devices';
+        if (filterCategory === 'vaccine')  label = 'Vaccines, Blood and Biologics';
+
         wrap.insertAdjacentHTML('beforeend', `
           <div class="rs-section-block">
             <div class="rs-section-heading">
@@ -483,8 +492,8 @@
             </div>
             <div class="rs-grid">${items.map(makeCard).join('')}</div>
           </div>`);
-      } else if (currentAgency !== 'fda' || filterCategory !== 'guidance') {
-          wrap.innerHTML = '<div class="rs-loader">Select a category to view resources.</div>';
+      } else {
+        wrap.innerHTML = '<div class="rs-loader">No resources available for this selection.</div>';
       }
     }
 
@@ -508,10 +517,7 @@
       const gs = document.getElementById('rs-section-grid');
       const ls = document.getElementById('rs-section-live-guidance');
 
-      // Reset visibility
-      ns.style.display = 'none';
-      gs.style.display = 'none';
-      ls.style.display = 'none';
+      ns.style.display = 'none'; gs.style.display = 'none'; ls.style.display = 'none';
 
       if (type === 'news') {
         ns.style.display = 'block';
@@ -520,11 +526,8 @@
         document.getElementById('newsroomLink').href = cfg.archive;
         fetchRSS(cfg.rss, 'newsList', cfg.name);
       } 
-      else if (type === 'guidance' && currentAgency === 'fda') {
-        ls.style.display = 'block';
-        fetchRSS(agencyConfig.fda.guidanceRss, 'guidanceList', 'FDA Guidance');
-      }
       else {
+        // Drug, Medical Devices, and Vaccine sections now all use the Grid layout
         gs.style.display = 'block';
         renderGrid(type);
       }
